@@ -172,7 +172,8 @@ class Svelteboilerplate {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
+		$this->loader->add_filter('script_loader_tag', $plugin_public, 'add_type_attribute' , 10, 3); 
+		
 	}
 
 	/**

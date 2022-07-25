@@ -74,7 +74,11 @@ class Svelteboilerplate_Public {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/svelteboilerplate-public.css', array(), $this->version, 'all' );
-
+		$files = glob(SVELTEBOILERPLATE_PATH . '/my-app/dist/assets/*.css');
+		
+		foreach ($files AS $key => $val){
+			wp_enqueue_style( 'svelte_my-app#'.$key , SVELTEBOILERPLATE_URL.'/my-app/dist/assets/' . basename($val) , array(), null, 'all' );
+		}
 	}
 
 	/**
@@ -97,7 +101,28 @@ class Svelteboilerplate_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/svelteboilerplate-public.js', array( 'jquery' ), $this->version, false );
+		$files = glob(SVELTEBOILERPLATE_PATH . '/my-app/dist/assets/*.js');
+		
+		foreach ($files AS $key => $val){
+			wp_enqueue_script( 'svelte_my-app#'.$key , SVELTEBOILERPLATE_URL.'/my-app/dist/assets/' . basename($val) , array(), null, true );
+		}
+		wp_localize_script( 'svelte_my-app#'.$key, 'frontend_ajax_object',
+			array( 
+				'ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'statuslogin' => wp_get_current_user()
+			)
+		);
+	}
 
+
+	public function add_type_attribute($tag, $handle, $src) {
+		// if not your script, do nothing and return original $tag
+		if (strpos($handle, 'svelte_my-app') !== false) {
+			$tag = '<script type="module" crossorigin src="' . esc_url( $src ) . '"></script>';
+			return $tag;
+		}
+		
+		return $tag;
 	}
 
 }
